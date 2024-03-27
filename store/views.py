@@ -1,14 +1,10 @@
-# from django.urls import path
-# from . import views
-
-# urlpatterns = [
-#     path('', views.home, name='home'),
-# ]
-
-# views.py
 from django.shortcuts import render
+from .models import Product
 
 def home(request):
+    products = Product.objects.all()
+    # print(type(Product))
+    # products = Product.objects.all()
     # Your view logic here
-    return render(request, 'home.html')
+    return render(request, 'home.html', {'products': products})
 
