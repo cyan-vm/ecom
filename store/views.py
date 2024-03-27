@@ -8,3 +8,6 @@ def home(request):
     # Your view logic here
     return render(request, 'home.html', {'products': products})
 
+def about(request):
+    return render(request, 'about.html')
+
