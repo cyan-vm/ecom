@@ -16,8 +16,11 @@ def category(request, foo):
     except:
         messages.success(request, 'that category does not exist')
         redirect('home')
-            
-       
+
+
+def category_summary(request):
+	categories = Category.objects.all()
+	return render(request, 'category_summary.html', {"categories":categories})	       
 
 
 def product(request, pk):
