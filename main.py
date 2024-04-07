@@ -3,40 +3,47 @@ import string
 
 # Gramática libre de contexto
 
-# S -> NP VP: (S) consists of a noun phrase (NP) followed by a verb phrase (VP).
-# NP -> Det N | Det N PP: noun phrase (NP) can be composed of a determiner (Det) followed by a noun (N), or a determiner followed by a noun and a prepositional phrase (PP).
-# VP -> V NP | VP PP: This rule specifies that a verb phrase (VP) can be a verb (V) followed by a noun phrase (NP), or a verb phrase followed by a prepositional phrase (PP).
-# PP -> P NP: This rule indicates that a prepositional phrase (PP) consists of a preposition (P) followed by a noun phrase (NP)self.
 # gramatica = nltk.CFG.fromstring("""
 #     S -> NP VP                 
 #     NP -> Det N | Det N PP
 #     VP -> V NP | VP PP
 #     PP -> P NP
 #     Det -> 'el' | 'la' | 'un' | 'una' | 'a'
-#     N -> 'gato' | 'pajaro' | 'Saul' | 'Cristhian' | 'Alondra :)' | 'tigre' | 'cotorro'
+#     N -> 'gato' | 'pajaro' | 'Saul' | 'Cristhian' | 'Alondra :)' | 'tigre' | 'cotorro' | 'rapidez'
 #     V -> 'observa' | 'come' | 'adora'
-#     P -> 'yo' | 'tu' | 'el' | 'ella' | 'nosotros' | 'nosotras' | 'nos'
+#     P -> 'yo' | 'tu' | 'el' | 'ella' | 'nosotros' | 'nosotras' | 'nos' | 'con' 
+# """)
+
+# gramatica = nltk.CFG.fromstring("""
+#     S -> NP VP
+#     NP -> Det N | Det N PP
+#     VP -> V NP | VP PP
+#     PP -> P NP
+#     Det -> 'el' | 'la' | 'un' | 'una' | 'al'
+#     N -> 'gato' | 'pajaro' | 'Saul' | 'Christian' | 'Alondra' | 'tigre' | 'cotorro' | 'rapidez'
+#     V -> 'observa' | 'come' | 'adora'
+#     P -> 'con'
 # """)
 
 gramatica = nltk.CFG.fromstring("""
-    S -> NP VP                 
+    S -> NP VP
     NP -> Det N | Det N PP
-    VP -> V NP | VP PP
-    PP -> P NP
-    Det -> 'el' | 'la' | 'un' | 'una' | 'a'
-    N -> 'gato' | 'pajaro' | 'Saul' | 'Cristhian' | 'Alondra :)' | 'tigre' | 'cotorro' | 'rapidez'
+    VP -> V NP | V NP PP | VP PP
+    PP -> P NP | P N
+    Det -> 'el' | 'la' | 'un' | 'una' | 'al'
+    N -> 'gato' | 'pajaro' | 'Saul' | 'Christian' | 'Alondra' | 'tigre' | 'cotorro' | 'rapidez'
     V -> 'observa' | 'come' | 'adora'
-    P -> 'yo' | 'tu' | 'el' | 'ella' | 'nosotros' | 'nosotras' | 'nos' | 'con'
+    P -> 'con'
 """)
-
-
-
 
 # Crear un parser con la gramática definida
 parser = nltk.ChartParser(gramatica)
 
 # Pedir al usuario que ingrese una oración para analizar
-oracion = "el tigre come un cotorro con rapidez"
+# oracion = "el tigre come un cotorro"
+oracion = "el gato observa al pajaro con rapidez"
+# oracion = "el tigre come un cotorro con Alondra"
+
 # oracion = "el tigre come un cotorro que adora Saul"
 
 
