@@ -9,18 +9,17 @@ gramatica = nltk.CFG.fromstring("""
     Det -> 'el' | 'la' | 'un' | 'una' | 'al'
     Adj -> 'hermoso' | 'rápido' | 'grande' | 'pequeño'
     N -> 'gato' | 'pajaro' | 'Saul' | 'Christian' | 'Alondra' | 'tigre' | 'cotorro' | 'rapidez'
-    V -> 'observa' | 'come' | 'adora' | 'observó'
+    V -> 'observa' | 'come' | 'adora' | 'observó' | 'observara'
     P -> 'con'
 """)
 
 # Crear un parser con la gramática definida
 parser = nltk.ChartParser(gramatica)
 
-# Pedir al usuario que ingrese una oración para analizar
 # oracion = "el tigre come un cotorro"
-oracion = "el hermoso gato observa al pajaro con rapidez"
-# oracion = "el hermoso gato observó al pajaro con rapidez"
-
+# oracion = "el hermoso gato observa al pajaro con rapidez"
+oracion = "el hermoso gato observó al pajaro con rapidez"
+# oracion = "el hermoso gato observara al pajaro con rapidez"
 
 # oracion = "el tigre come un cotorro con Alondra"
 
@@ -32,11 +31,9 @@ oracion_sin_puntuacion = oracion.translate(translator)
 tokens = oracion_sin_puntuacion.split()
 
 try:
-    # Intentar analizar la oración con la gramática definida
+    # Analizar la oración con la gramática definida
     arbol_parseo = list(parser.parse(tokens))
 
-    # Función para determinar el tiempo verbal de un verbo
-# Función para determinar el tiempo verbal de un verbo
     def determinar_tiempo_verbal(arbol):
         for nodo in arbol.subtrees():
             if nodo.label() == 'V':
@@ -44,10 +41,8 @@ try:
                     return "Presente"
                 elif 'observó' in nodo[0]:
                     return "Pasado"
-                # Agregar más condiciones para otros verbos y contextos
                 else:
                     return "Desconocido"
-        return "N/A"
 
 
     # Mostrar las producciones de la gramática
