@@ -1,53 +1,81 @@
-import nltk
-from nltk import RegexpParser
-from nltk.tokenize import word_tokenize
+  import nltk
+  import string
 
-# Definir un diccionario manualmente
-dictionary = {
-    "comer": ["yo como", "tú comes", "él/ella come", "nosotros/as comemos", "vosotros/as coméis", "ellos/ellas comen"]
-}
+  # Defining the grammar with information about the verb tense and number
+  gramatica = nltk.CFG.fromstring(
+      """
+      S -> NP VP
+      NP -> Det Adj N | Det Adj N PP | Det N | Det N PP
+      VP -> V_presente_singular NP | V_presente_plural NP | V_presente_singular NP PP | V_presente_plural NP PP | VP PP | V_pasado_singular NP | V_pasado_plural NP | V_pasado_singular NP PP | V_pasado_plural NP PP | V_futuro_singular NP | V_futuro_plural NP | V_futuro_singular NP PP | V_futuro_plural NP PP
+      PP -> P NP | P N
+      Det -> 'el' | 'la' | 'un' | 'una' | 'al' | 'los' | 'las'
+      Adj -> 'hermoso' | 'rápido' | 'grande' | 'pequeño'| 'hermosos'| 'rápidos' | 'grandes' | 'pequeños'| 'hermosas'| 'rápidas' | 'grandes' | 'pequeñas'
+      N -> 'gato' | 'pajaro' | 'perro' | 'elefante' | 'aguila' | 'tigre' | 'caballo' | 'elegancia'| 'tigres'| 'pajaros'| 'perros'| 'elefantes'| 'aguilas'| 'caballos'| 'gatos'
+      V_presente_singular -> 'observa' | 'come' | 'adora'
+      V_presente_plural -> 'observan' | 'comen' | 'adoran'
+      V_pasado_singular -> 'observó' | 'comió' | 'adoró'
+      V_pasado_plural -> 'observaron' | 'comieron' | 'adoraron'
+      V_futuro_singular -> 'observará' | 'comerá' | 'adorará'
+      V_futuro_plural -> 'observarán' | 'comerán' | 'adorarán'
+      P -> 'con'
+  """
+  )
 
-# Oración de entrada
-sentence = "Yo como una manzana verde."
+  # Create a parser with the defined grammar
+  parser = nltk.ChartParser(gramatica)
 
-# Tokenización de la oración
-tokens = word_tokenize(sentence)
+  # Input sentence
+  oracion = "los hermosos tigres observaron el grande caballo"
 
-# Etiquetado gramatical
-tagged = nltk.pos_tag(tokens)
+  # Remove punctuation and tokenize the sentence
+  translator = str.maketrans("", "", string.punctuation)
+  oracion_sin_puntuacion = oracion.translate(translator)
+  tokens = oracion_sin_puntuacion.split()
 
-# Reglas de la gramática
-grammar = r"""
-    NP: {<DT>?<JJ>*<NN>} # Chunk determiner/adj/noun
-    VP: {<PRP>|<VB.*><NP|PP>*} # Chunk verbs and their arguments
-"""
+  try:
+      # Try to parse the sentence with the defined grammar
+      arbol_parseo = list(parser.parse(tokens))
 
-# Crear el analizador de sintaxis
-chunk_parser = RegexpParser(grammar)
+      # Show the grammar productions
+      print("\nProducciones de la gramática:")
+      for produccion in gramatica.productions():
+          print(produccion)
 
-# Parsear la oración
-parsed_sentence = chunk_parser.parse(tagged)
+      # Show the parse tree
+      print("\nÁrbol de parseo:")
+      arbol_parseo[0].pretty_print()
 
-# Imprimir el árbol
-parsed_sentence.pretty_print()
+      # Find the verb in the parse tree and determine its tense and number
+      tiempo_verbo = ""
+      numero_verbo = ""
+      for subarbol in arbol_parseo[0].subtrees():
+          if subarbol.label() == "V_presente_singular":
+              tiempo_verbo = "presente"
+              numero_verbo = "singular"
+          elif subarbol.label() == "V_presente_plural":
+              tiempo_verbo = "presente"
+              numero_verbo = "plural"
+          elif subarbol.label() == "V_pasado_singular":
+              tiempo_verbo = "pasado"
+              numero_verbo = "singular"
+          elif subarbol.label() == "V_pasado_plural":
+              tiempo_verbo = "pasado"
+              numero_verbo = "plural"
+          elif subarbol.label() == "V_futuro_singular":
+              tiempo_verbo = "futuro"
+              numero_verbo = "singular"
+          elif subarbol.label() == "V_futuro_plural":
+              tiempo_verbo = "futuro"
+              numero_verbo = "plural"
 
-# Identificar conjugación del verbo
-verb = ""
-for word, pos in tagged:
-    if pos.startswith('VB'):
-        verb = word
-        break
+      if tiempo_verbo:
+          print(
+              f"\nEl verbo utilizado está en tiempo {tiempo_verbo} y es {numero_verbo}."
+          )
+      else:
+          print("\nNo se pudo determinar el tiempo verbal y número del verbo.")
 
-# Buscar en el diccionario manual
-pronoun = ""
-if verb in dictionary:
-    for entry in dictionary[verb]:
-        pronoun, conjugated_verb = entry.split(" ", 1)
-        if pronoun.lower() == "yo" and conjugated_verb == verb:
-            break
+      print("\nLa oración cumple con las reglas gramaticales.")
 
-# Imprimir resultados
-if pronoun:
-    print("La oración está correctamente conjugada con el pronombre:", pronoun)
-else:
-    print("La oración no está en el diccionario o no está correctamente conjugada.")
+  except IndexError:
+      print("\nLa oración no cumple con las reglas gramaticales.")
