@@ -163,3 +163,16 @@ accuracy = correct_predictions / len(X)
 
 print("Best hyperparameters:", best_params)
 print("Accuracy of the best model:", accuracy)
+
+
+# Save the best model
+torch.save(best_model.state_dict(), 'best_model.pth')
+
+# test = torch.tensor([1, 0, 1, 0, 0, 0 , 0, 1], dtype=torch.float32)
+
+# model(test)
+
+# predicted_test = torch.argmax(output).item()
+# predicted_label_test = target_encoder.inverse_transform([predicted_test])[0]
+# print("Predicted output: test", predicted_label_test)
+
