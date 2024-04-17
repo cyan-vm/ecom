@@ -91,5 +91,6 @@ for i in range(len(X)):
 
 print("Number of correct predictions:", correct_predictions)
 print("Number of wrong predictions:", wrong_predictions)
+accuracy = correct_predictions / len(X) * 100
 
-print(correct_predictions / len(X) * 100) 
+print(f'Accuracy : {accuracy}') 
