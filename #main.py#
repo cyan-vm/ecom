@@ -1,7 +1,7 @@
 import nltk
 import string
 
-# Definir la gramática con información sobre el tiempo verbal
+# Definir la gramática con información sobre el tiempo verbal y el número
 gramatica = nltk.CFG.fromstring(
  """
     O -> SN SV
@@ -23,6 +23,7 @@ gramatica = nltk.CFG.fromstring(
 
 analizador = nltk.ChartParser(gramatica)
 
+# Oración de entrada
 # oracion = "¿los hermosos tigres observaron el grande caballo?"
 
 # oracion = 'el rápido elefante observo al hermoso tigre con elegancia'
@@ -34,7 +35,7 @@ oracion = "¿ el gato rápido observa al tigre hermoso con elegancia ?"
 
 esInterrogacion = False
 
-# Verificar si la oración termina con un signo de interrogación o empieza con signo de interrogacion
+# Verificar si la oración termina con un signo de interrogación
 if oracion.startswith("¿") and oracion.endswith("?"):
     # Quitar el signo de interrogación
     oracion = oracion[1:]
