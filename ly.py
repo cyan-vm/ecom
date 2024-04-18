@@ -1,28 +1,51 @@
-import torch
-from nn import model, output, target_encoder 
+import torch 
+from trial import model, load_model, input_size, best_hidden_size, output_size, model_filepath, X, y, target_encoder
+# import torch.nn as nn
+# import torch.optim as optim
 
-test = torch.tensor([1, 0, 1, 0, 0, 0 , 0, 1], dtype=torch.float32)
+model = load_model(input_size, best_hidden_size, output_size, model_filepath)
 
-model(test)
+print("Model loaded successfully.")
 
-predicted_test = torch.argmax(output).item()
-predicted_label_test = target_encoder.inverse_transform([predicted_test])[0]
-print("Predicted output: ", predicted_label_test)
+# Prediction
+correct_predictions = 0
+wrong_predictions = 0
 
-# # Define the input size, hidden size, and output size
-# input_size = len(data.columns[:-1])
-# hidden_size = 64
-# output_size = len(data['depresion'].unique())
+for i in range(len(X)):
+    input_to_predict = X[i]
+    output = model(input_to_predict)
+    predicted_class = torch.argmax(output).item()
+    true_class = y[i].item()
+    if predicted_class == true_class:
+        correct_predictions += 1
+    else:
+        wrong_predictions += 1
 
-# # Instantiate the model
-# model = NeuralNetwork(input_size, hidden_size, output_size)
+print("Number of correct predictions:", correct_predictions)
+print("Number of wrong predictions:", wrong_predictions)
 
-# # Load the saved model state dictionary
-# model.load_state_dict(torch.load("best_model.pth"))
+print(f"Accuracy : {correct_predictions / len(X) * 100}%")
 
-# # Make predictions using the loaded model
-# input_to_predict = torch.tensor([0, 1, 0, 1, 1, 0, 1, 0], dtype=torch.float32)
+
+# Prediction
+input_to_predict = torch.tensor([0, 0, 1, 1, 0, 0, 0, 0], dtype=torch.float32)
+output = model(input_to_predict)
+predicted_class = torch.argmax(output).item()
+predicted_label = target_encoder.inverse_transform([predicted_class])[0]
+print("Predicted output:", predicted_label)
+
+
+
+# [1, 0, 0, 0, 0, 0, 0, 0]
+
+
+# input_to_predict = torch.tensor([1, 0, 1, 0, 0, 0 , 0, 1], dtype=torch.float32)
 # output = model(input_to_predict)
 # predicted_class = torch.argmax(output).item()
-# print("Predicted class:", predicted_class)
+# predicted_label = target_encoder.inverse_transform([predicted_class])[0]
+# print("Predicted output:", predicted_label)
+
+# print(LabelEncoder())
+
+
 

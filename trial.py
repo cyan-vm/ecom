@@ -1,22 +1,10 @@
 import pandas as pd
 import torch
 from sklearn.preprocessing import LabelEncoder
+import optuna
 
 # Read the data
 data = pd.read_excel("~/Downloads/salidas.xlsx")
-
-# Define function to convert categorical features to binary encoding
-def convert_to_binary(df):
-    binary_data = df.copy()
-    for column in binary_data.columns[:-1]:  # Exclude the target column
-        binary_data[column] = binary_data[column].apply(lambda x: 0 if x == 'No' else 1)
-    return binary_data
-
-# Convert categorical features to binary encoding
-binary_data = convert_to_binary(data)
-
-# target_encoder = LabelEncoder()
-# binary_data['depresion'] = target_encoder.fit_transform(binary_data['depresion'])
 
 # Convert categorical variables to numerical using LabelEncoder
 label_encoders = {}
@@ -84,6 +72,7 @@ for i in range(len(X)):
     output = model(input_to_predict)
     predicted_class = torch.argmax(output).item()
     true_class = y[i].item()
+    print(predicted_class)
     if predicted_class == true_class:
         correct_predictions += 1
     else:
@@ -93,10 +82,10 @@ print("Number of correct predictions:", correct_predictions)
 print("Number of wrong predictions:", wrong_predictions)
 accuracy = correct_predictions / len(X) * 100
 
-print(f'Accuracy : {accuracy}') 
+print(f'Accuracy : {accuracy}%') 
 
 
-import optuna
+# Optunaaa
 
 def objective(trial):
     # Define hyperparameters to search
@@ -164,15 +153,82 @@ accuracy = correct_predictions / len(X)
 print("Best hyperparameters:", best_params)
 print("Accuracy of the best model:", accuracy)
 
+def save_model(model, filepath):
+    torch.save(model.state_dict(), filepath)
 
-# Save the best model
-torch.save(best_model.state_dict(), 'best_model.pth')
+def load_model(input_size, hidden_size, output_size, filepath):
+    model = NeuralNetwork(input_size, hidden_size, output_size)
+    model.load_state_dict(torch.load(filepath))
+    return model
 
-# test = torch.tensor([1, 0, 1, 0, 0, 0 , 0, 1], dtype=torch.float32)
+def train_model(X, y, model, criterion, optimizer, epochs):
+    for epoch in range(epochs):
+        optimizer.zero_grad()
+        outputs = model(X)
+        loss = criterion(outputs, y)
+        loss.backward()
+        optimizer.step()
+        if (epoch+1) % 10 == 0:
+            print(f'Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.4f}')
 
-# model(test)
+model_filepath = 'best_model.pth'
 
-# predicted_test = torch.argmax(output).item()
-# predicted_label_test = target_encoder.inverse_transform([predicted_test])[0]
-# print("Predicted output: test", predicted_label_test)
+print("Training a new model...")
+model = NeuralNetwork(input_size, best_hidden_size, output_size)
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters(), lr=best_learning_rate)
+epochs = 100
+train_model(X, y, model, criterion, optimizer, epochs)
+save_model(model, model_filepath)
+print("Model trained and saved.")
+
+
+# try:
+#     model = load_model(input_size, best_hidden_size, output_size, model_filepath)
+#     print("Model loaded successfully.")
+# except FileNotFoundError:
+#     print("Training a new model...")
+#     model = NeuralNetwork(input_size, best_hidden_size, output_size)
+#     criterion = nn.CrossEntropyLoss()
+#     optimizer = optim.Adam(model.parameters(), lr=best_learning_rate)
+#     epochs = 100
+#     train_model(X, y, model, criterion, optimizer, epochs)
+#     save_model(model, model_filepath)
+#     print("Model trained and saved.")
+
+# # Prediction
+# correct_predictions = 0
+# wrong_predictions = 0
+
+# for i in range(len(X)):
+#     input_to_predict = X[i]
+#     output = model(input_to_predict)
+#     predicted_class = torch.argmax(output).item()
+#     true_class = y[i].item()
+#     if predicted_class == true_class:
+#         correct_predictions += 1
+#     else:
+#         wrong_predictions += 1
+
+# print("Number of correct predictions:", correct_predictions)
+# print("Number of wrong predictions:", wrong_predictions)
+
+# print(f"Accuracy : {correct_predictions / len(X) * 100}%")
+
+
+# # Prediction
+# input_to_predict = torch.tensor([1, 0, 0, 1, 1, 0, 0, 1], dtype=torch.float32)
+# output = model(input_to_predict)
+# predicted_class = torch.argmax(output).item()
+# predicted_label = target_encoder.inverse_transform([predicted_class])[0]
+# print("Predicted output:", predicted_label)
+
+# input_to_predict = torch.tensor([1, 0, 1, 0, 0, 0 , 0, 1], dtype=torch.float32)
+# output = model(input_to_predict)
+# predicted_class = torch.argmax(output).item()
+# predicted_label = target_encoder.inverse_transform([predicted_class])[0]
+# print("Predicted output:", predicted_label)
+
+# print(LabelEncoder())
+
 
